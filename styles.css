@@ -125,6 +125,17 @@ h3 { font-size: 1.2rem; }
   color: var(--orange);
   background: rgba(244,198,3,0.15);
 }
+.nav-links .nav-disabled {
+  display: block;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #AAAAAA;
+  cursor: not-allowed;
+  opacity: 0.4;
+  user-select: none;
+}
 
 /* ── Hero ── */
 .hero {
