@@ -142,7 +142,7 @@ h3 { font-size: 1.2rem; }
 .nav-links .nav-disabled::after {
   content: 'This tool is still under construction';
   position: absolute;
-  bottom: calc(100% + 8px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   background: #1A1A1A;
