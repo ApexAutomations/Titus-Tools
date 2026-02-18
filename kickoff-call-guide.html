@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kickoff Call Guide Agent | Titus Talent Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .upload-zone {
+      border: 2px dashed var(--gray-mid); border-radius: 10px; padding: 2rem 1.5rem;
+      text-align: center; cursor: pointer; transition: all 0.2s; background: var(--navy); position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--orange); background: rgba(232,96,44,0.05); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .upload-zone p { font-size: 0.85rem; color: var(--gray-light); margin: 0; }
+    .upload-zone .upload-label { font-size: 0.9rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
+    .upload-zone .file-types { font-size: 0.72rem; color: var(--gray-mid); margin-top: 0.4rem; }
+    .file-list { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .file-item {
+      display: flex; align-items: center; gap: 8px; background: rgba(232,96,44,0.08);
+      border: 1px solid rgba(232,96,44,0.2); border-radius: 6px; padding: 0.4rem 0.75rem; font-size: 0.8rem; color: var(--white);
+    }
+    .file-item .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-item .remove-file { cursor: pointer; color: var(--gray-light); font-size: 1rem; background: none; border: none; padding: 0; transition: color 0.2s; }
+    .file-item .remove-file:hover { color: var(--orange); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">titus</span>
+          <span class="brand-sub">Talent Strategies</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calibration-kickoff.html">Calibration</a></li>
+        <li><a href="performance-profile.html">Performance</a></li>
+        <li><a href="kickoff-call-guide.html" class="active">Kickoff Guide</a></li>
+        <li><a href="consulting-report.html">Consulting</a></li>
+        <li><a href="proposal.html">Proposal</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <a href="index.html" class="back-link">&#8592; Back to Tools</a>
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <div class="tool-icon" style="width:52px;height:52px;font-size:1.5rem;border-radius:12px;background:rgba(232,96,44,0.15);display:flex;align-items:center;justify-content:center;">📞</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <h1 style="font-size:1.8rem;">Kickoff Call Guide Agent</h1>
+            <span class="badge">Agent</span>
+          </div>
+          <p style="color:var(--gray-light);font-size:0.9rem;margin-top:0.3rem;">
+            Generate a structured, ready-to-use kickoff call guide tailored to the partner and engagement.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <form id="kickoffGuideForm" novalidate>
+      <div class="form-card">
+
+        <div class="form-section-header">
+          <h3>Section 1 &mdash; Engagement Details</h3>
+          <p>Information about the partner and the upcoming kickoff call</p>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="field">
+              <label for="companyName">Company / Partner Name <span class="req">*</span></label>
+              <input type="text" id="companyName" name="companyName" placeholder="e.g. Acme Corporation" required />
+            </div>
+            <div class="field">
+              <label for="userEmail">Your Email Address <span class="req">*</span></label>
+              <input type="email" id="userEmail" name="userEmail" placeholder="you@titustalent.com" required />
+            </div>
+            <div class="field">
+              <label for="hiringManager">Hiring Manager Name</label>
+              <input type="text" id="hiringManager" name="hiringManager" placeholder="e.g. Jane Smith" />
+            </div>
+            <div class="field">
+              <label for="roleTitle">Role / Position Title <span class="req">*</span></label>
+              <input type="text" id="roleTitle" name="roleTitle" placeholder="e.g. VP of Marketing" required />
+            </div>
+            <div class="field">
+              <label for="industry">Industry</label>
+              <input type="text" id="industry" name="industry" placeholder="e.g. Healthcare, SaaS, Manufacturing" />
+            </div>
+            <div class="field">
+              <label for="engagementType">Engagement Type</label>
+              <select id="engagementType" name="engagementType">
+                <option value="">Select type...</option>
+                <option>Executive Search</option>
+                <option>Talent Optimization</option>
+                <option>Retained Search</option>
+                <option>Contingency Search</option>
+                <option>Consulting</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-header">
+          <h3>Section 2 &mdash; Call Context</h3>
+          <p>Help us tailor the guide to your specific call objectives</p>
+        </div>
+        <div class="form-body">
+          <div class="form-grid single">
+            <div class="field">
+              <label for="callObjectives">Key Objectives for the Call</label>
+              <textarea id="callObjectives" name="callObjectives" rows="3" placeholder="What are the main goals or outcomes you need from this kickoff call?"></textarea>
+            </div>
+            <div class="field">
+              <label for="painPoints">Known Pain Points / Challenges</label>
+              <textarea id="painPoints" name="painPoints" rows="3" placeholder="Any known challenges the partner is facing with this role or team?"></textarea>
+            </div>
+            <div class="field">
+              <label for="timeline">Timeline / Urgency</label>
+              <input type="text" id="timeline" name="timeline" placeholder="e.g. Need to fill within 60 days, Q1 start date" />
+            </div>
+          </div>
+
+          <hr class="form-divider" />
+
+          <div class="form-block">
+            <div class="form-block-title">Supporting Documents</div>
+            <div class="upload-zone" id="docsZone">
+              <input type="file" id="docsFiles" name="docsFiles" accept=".pdf,.doc,.docx,.txt" multiple />
+              <div class="upload-icon">📁</div>
+              <div class="upload-label">Upload Job Descriptions, Previous Notes, or Context Docs</div>
+              <p>Click to browse or drag and drop &mdash; <strong style="color:var(--white);">multiple files supported</strong></p>
+              <div class="file-types">PDF, Word, TXT accepted</div>
+            </div>
+            <div class="file-list" id="docsFileList"></div>
+          </div>
+        </div>
+
+        <div class="submit-bar">
+          <p>Fields marked <strong style="color:var(--orange);">*</strong> are required.</p>
+          <button type="submit" class="btn btn-primary btn-lg">
+            <span>Generate Kickoff Call Guide</span>
+            <span>&#9654;</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2025 <a href="https://www.titustalent.com" target="_blank">Titus Talent Strategies</a> &nbsp;&middot;&nbsp; Internal Tools Portal &nbsp;&middot;&nbsp; Powered by Make.com</p>
+  </footer>
+
+  <div class="form-overlay" id="loadingOverlay">
+    <div class="overlay-card">
+      <div class="spinner"></div>
+      <h2>Building Your Call Guide</h2>
+      <p>Crafting a tailored kickoff call guide for your engagement. This may take a moment.</p>
+    </div>
+  </div>
+  <div class="form-overlay" id="successOverlay">
+    <div class="overlay-card">
+      <div class="overlay-icon">✅</div>
+      <h2>Guide Ready!</h2>
+      <p>Your kickoff call guide has been submitted for generation. Check your email for the completed guide.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="location.reload()">Submit Another</button>
+        <a href="index.html" class="btn btn-outline">Back to Tools</a>
+      </div>
+    </div>
+  </div>
+  <div class="form-overlay" id="errorOverlay">
+    <div class="overlay-card">
+      <div class="overlay-icon">⚠️</div>
+      <h2>Something Went Wrong</h2>
+      <p id="errorMessage">There was an issue submitting your request. Please try again.</p>
+      <button class="btn btn-primary" onclick="closeOverlay('errorOverlay')">Try Again</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    setupUploadZone('docsZone', 'docsFiles', 'docsFileList', true);
+
+    document.getElementById('kickoffGuideForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const companyName = document.getElementById('companyName').value.trim();
+      const userEmail   = document.getElementById('userEmail').value.trim();
+      const roleTitle   = document.getElementById('roleTitle').value.trim();
+      if (!companyName || !userEmail || !roleTitle) { showError('Please fill in all required fields.'); return; }
+      if (!isValidEmail(userEmail)) { showError('Please enter a valid email address.'); return; }
+
+      showOverlay('loadingOverlay');
+      try {
+        const formData = new FormData();
+        formData.append('tool', 'kickoff-call-guide');
+        formData.append('companyName', companyName);
+        formData.append('userEmail', userEmail);
+        formData.append('hiringManager', document.getElementById('hiringManager').value);
+        formData.append('roleTitle', roleTitle);
+        formData.append('industry', document.getElementById('industry').value);
+        formData.append('engagementType', document.getElementById('engagementType').value);
+        formData.append('callObjectives', document.getElementById('callObjectives').value);
+        formData.append('painPoints', document.getElementById('painPoints').value);
+        formData.append('timeline', document.getElementById('timeline').value);
+        appendFiles(formData, 'docsFiles', 'docs');
+
+        const WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+        const response = await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
+        if (response.ok) { closeOverlay('loadingOverlay'); showOverlay('successOverlay'); }
+        else throw new Error('Server error ' + response.status);
+      } catch(err) {
+        closeOverlay('loadingOverlay');
+        showError('Unable to reach the automation server. Please try again.');
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Titus Talent Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .stats-row {
+      display: flex;
+      gap: 2.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 3.5rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--gray-light);
+      margin-top: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+    @media (max-width: 600px) { .divider { display: none; } }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">titus</span>
+          <span class="brand-sub">Talent Strategies</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="calibration-kickoff.html">Calibration</a></li>
+        <li><a href="performance-profile.html">Performance</a></li>
+        <li><a href="kickoff-call-guide.html">Kickoff Guide</a></li>
+        <li><a href="consulting-report.html">Consulting</a></li>
+        <li><a href="proposal.html">Proposal</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">AI-Powered Tools</span>
+      <h1>Talent Strategy,<br><span>Automated.</span></h1>
+      <p class="lead">
+        Purpose-built automations for the Titus Talent team — generate documents,
+        profiles, and strategies in minutes, not hours.
+      </p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num">5</div>
+          <div class="stat-label">AI Tools</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <div class="stat-num">1,100+</div>
+          <div class="stat-label">Partners Served</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <div class="stat-num">18</div>
+          <div class="stat-label">Industries</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <div class="stat-num">85%</div>
+          <div class="stat-label">1-Year Retention Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Grid -->
+  <div class="section">
+    <div class="section-label">Automation Suite</div>
+    <h2 class="section-title">Choose Your Tool</h2>
+    <p class="section-sub">Select a workflow to get started. Each tool connects directly to our automation pipeline.</p>
+
+    <div class="tools-grid">
+
+      <!-- 1. Calibration & Kickoff — FEATURED -->
+      <a href="calibration-kickoff.html" class="tool-card featured" style="text-decoration:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tool-icon">🎯</div>
+          <span class="badge gold">Primary Tool</span>
+        </div>
+        <div>
+          <h3>Calibration &amp; Kickoff Strategy</h3>
+          <p>Upload your kickoff survey, call transcript, job descriptions, and company details to generate a comprehensive calibration and strategy document.</p>
+        </div>
+        <span class="card-link">Launch Tool &rarr;</span>
+      </a>
+
+      <!-- 2. Performance Profile -->
+      <a href="performance-profile.html" class="tool-card" style="text-decoration:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tool-icon">📊</div>
+          <span class="badge">Agent</span>
+        </div>
+        <div>
+          <h3>Performance Profile Agent</h3>
+          <p>Generate detailed performance profiles for candidates and roles to support data-driven hiring decisions and team optimization.</p>
+        </div>
+        <span class="card-link">Launch Tool &rarr;</span>
+      </a>
+
+      <!-- 3. Kickoff Call Guide -->
+      <a href="kickoff-call-guide.html" class="tool-card" style="text-decoration:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tool-icon">📞</div>
+          <span class="badge">Agent</span>
+        </div>
+        <div>
+          <h3>Kickoff Call Guide Agent</h3>
+          <p>Automatically create structured kickoff call guides tailored to the partner, role, and engagement type — ready to use in minutes.</p>
+        </div>
+        <span class="card-link">Launch Tool &rarr;</span>
+      </a>
+
+      <!-- 4. Consulting Report -->
+      <a href="consulting-report.html" class="tool-card" style="text-decoration:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tool-icon">📋</div>
+          <span class="badge">Agent</span>
+        </div>
+        <div>
+          <h3>Consulting Report Agent</h3>
+          <p>Produce professional consulting reports with insights, recommendations, and strategic analysis for your partners and stakeholders.</p>
+        </div>
+        <span class="card-link">Launch Tool &rarr;</span>
+      </a>
+
+      <!-- 5. Proposal -->
+      <a href="proposal.html" class="tool-card" style="text-decoration:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tool-icon">📝</div>
+          <span class="badge">Agent</span>
+        </div>
+        <div>
+          <h3>Proposal Agent</h3>
+          <p>Generate polished, personalized proposals for prospective partners — tailored to their industry, size, and talent challenges.</p>
+        </div>
+        <span class="card-link">Launch Tool &rarr;</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 <a href="https://www.titustalent.com" target="_blank">Titus Talent Strategies</a> &nbsp;&middot;&nbsp; Internal Tools Portal &nbsp;&middot;&nbsp; Powered by Make.com</p>
+  </footer>
+
+</body>
+</html>

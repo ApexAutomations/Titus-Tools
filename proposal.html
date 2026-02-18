@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposal Agent | Titus Talent Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .upload-zone {
+      border: 2px dashed var(--gray-mid); border-radius: 10px; padding: 2rem 1.5rem;
+      text-align: center; cursor: pointer; transition: all 0.2s; background: var(--navy); position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--orange); background: rgba(232,96,44,0.05); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .upload-zone p { font-size: 0.85rem; color: var(--gray-light); margin: 0; }
+    .upload-zone .upload-label { font-size: 0.9rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
+    .upload-zone .file-types { font-size: 0.72rem; color: var(--gray-mid); margin-top: 0.4rem; }
+    .file-list { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .file-item {
+      display: flex; align-items: center; gap: 8px; background: rgba(232,96,44,0.08);
+      border: 1px solid rgba(232,96,44,0.2); border-radius: 6px; padding: 0.4rem 0.75rem; font-size: 0.8rem; color: var(--white);
+    }
+    .file-item .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-item .remove-file { cursor: pointer; color: var(--gray-light); font-size: 1rem; background: none; border: none; padding: 0; transition: color 0.2s; }
+    .file-item .remove-file:hover { color: var(--orange); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">titus</span>
+          <span class="brand-sub">Talent Strategies</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calibration-kickoff.html">Calibration</a></li>
+        <li><a href="performance-profile.html">Performance</a></li>
+        <li><a href="kickoff-call-guide.html">Kickoff Guide</a></li>
+        <li><a href="consulting-report.html">Consulting</a></li>
+        <li><a href="proposal.html" class="active">Proposal</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <a href="index.html" class="back-link">&#8592; Back to Tools</a>
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <div class="tool-icon" style="width:52px;height:52px;font-size:1.5rem;border-radius:12px;background:rgba(232,96,44,0.15);display:flex;align-items:center;justify-content:center;">📝</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <h1 style="font-size:1.8rem;">Proposal Agent</h1>
+            <span class="badge">Agent</span>
+          </div>
+          <p style="color:var(--gray-light);font-size:0.9rem;margin-top:0.3rem;">
+            Generate polished, personalized proposals tailored to prospective partners' industry, size, and talent challenges.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <form id="proposalForm" novalidate>
+      <div class="form-card">
+
+        <div class="form-section-header">
+          <h3>Section 1 &mdash; Prospect Information</h3>
+          <p>Details about the prospective partner you're creating this proposal for</p>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="field">
+              <label for="prospectName">Prospect / Company Name <span class="req">*</span></label>
+              <input type="text" id="prospectName" name="prospectName" placeholder="e.g. Acme Corporation" required />
+            </div>
+            <div class="field">
+              <label for="contactName">Primary Contact Name</label>
+              <input type="text" id="contactName" name="contactName" placeholder="e.g. John Smith" />
+            </div>
+            <div class="field">
+              <label for="contactTitle">Contact Title</label>
+              <input type="text" id="contactTitle" name="contactTitle" placeholder="e.g. Chief People Officer" />
+            </div>
+            <div class="field">
+              <label for="userEmail">Your Email Address <span class="req">*</span></label>
+              <input type="email" id="userEmail" name="userEmail" placeholder="you@titustalent.com" required />
+            </div>
+            <div class="field">
+              <label for="websiteUrl">Prospect Website</label>
+              <input type="text" id="websiteUrl" name="websiteUrl" placeholder="https://www.example.com" />
+            </div>
+            <div class="field">
+              <label for="industry">Industry <span class="req">*</span></label>
+              <input type="text" id="industry" name="industry" placeholder="e.g. Healthcare, SaaS, Manufacturing" required />
+            </div>
+            <div class="field">
+              <label for="companySize">Company Size</label>
+              <select id="companySize" name="companySize">
+                <option value="">Select size...</option>
+                <option>1–50 employees</option>
+                <option>51–200 employees</option>
+                <option>201–500 employees</option>
+                <option>501–1,000 employees</option>
+                <option>1,001–5,000 employees</option>
+                <option>5,000+ employees</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="location">Location / Region</label>
+              <input type="text" id="location" name="location" placeholder="e.g. Milwaukee, WI / Remote / National" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-header">
+          <h3>Section 2 &mdash; Proposal Details</h3>
+          <p>Help us craft a compelling, targeted proposal</p>
+        </div>
+        <div class="form-body">
+          <div class="form-grid single">
+            <div class="field">
+              <label for="servicesNeeded">Services Being Proposed <span class="req">*</span></label>
+              <div class="check-group radio-group">
+                <label class="radio-pill"><input type="checkbox" name="services" value="Executive Search" /><label>Executive Search</label></label>
+                <label class="radio-pill"><input type="checkbox" name="services" value="Talent Optimization" /><label>Talent Optimization</label></label>
+                <label class="radio-pill"><input type="checkbox" name="services" value="Titus U" /><label>Titus U</label></label>
+                <label class="radio-pill"><input type="checkbox" name="services" value="Retained Search" /><label>Retained Search</label></label>
+                <label class="radio-pill"><input type="checkbox" name="services" value="Consulting" /><label>Consulting</label></label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="painPoints">Known Pain Points / Talent Challenges</label>
+              <textarea id="painPoints" name="painPoints" rows="4" placeholder="What talent, hiring, or people challenges is this prospect facing?"></textarea>
+            </div>
+            <div class="field">
+              <label for="rolesToFill">Roles to Fill (if applicable)</label>
+              <textarea id="rolesToFill" name="rolesToFill" rows="2" placeholder="e.g. VP of Sales, 3x Software Engineers, Director of HR"></textarea>
+            </div>
+            <div class="field">
+              <label for="budget">Estimated Budget / Fee Range</label>
+              <input type="text" id="budget" name="budget" placeholder="e.g. $25,000–$50,000, TBD, Retainer" />
+            </div>
+            <div class="field">
+              <label for="tone">Proposal Tone</label>
+              <select id="tone" name="tone">
+                <option value="">Select tone...</option>
+                <option>Formal & Professional</option>
+                <option>Warm & Consultative</option>
+                <option>Bold & Direct</option>
+                <option>Partnership-Focused</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="additionalContext">Additional Context or Notes</label>
+              <textarea id="additionalContext" name="additionalContext" rows="3" placeholder="Anything else that should shape this proposal — relationship history, competitive context, specific asks, etc."></textarea>
+            </div>
+          </div>
+
+          <hr class="form-divider" />
+
+          <div class="form-block">
+            <div class="form-block-title">Supporting Documents</div>
+            <div class="upload-zone" id="docsZone">
+              <input type="file" id="docsFiles" name="docsFiles" accept=".pdf,.doc,.docx,.txt" multiple />
+              <div class="upload-icon">📁</div>
+              <div class="upload-label">Upload RFPs, Discovery Notes, or Reference Materials</div>
+              <p>Click to browse or drag and drop &mdash; <strong style="color:var(--white);">multiple files supported</strong></p>
+              <div class="file-types">PDF, Word, TXT accepted</div>
+            </div>
+            <div class="file-list" id="docsFileList"></div>
+          </div>
+        </div>
+
+        <div class="submit-bar">
+          <p>Fields marked <strong style="color:var(--orange);">*</strong> are required.</p>
+          <button type="submit" class="btn btn-primary btn-lg">
+            <span>Generate Proposal</span>
+            <span>&#9654;</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2025 <a href="https://www.titustalent.com" target="_blank">Titus Talent Strategies</a> &nbsp;&middot;&nbsp; Internal Tools Portal &nbsp;&middot;&nbsp; Powered by Make.com</p>
+  </footer>
+
+  <div class="form-overlay" id="loadingOverlay">
+    <div class="overlay-card">
+      <div class="spinner"></div>
+      <h2>Building Your Proposal</h2>
+      <p>Crafting a personalized proposal for your prospect. This may take a moment.</p>
+    </div>
+  </div>
+  <div class="form-overlay" id="successOverlay">
+    <div class="overlay-card">
+      <div class="overlay-icon">✅</div>
+      <h2>Proposal Submitted!</h2>
+      <p>Your proposal request has been received. Check your email for the completed document shortly.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="location.reload()">Submit Another</button>
+        <a href="index.html" class="btn btn-outline">Back to Tools</a>
+      </div>
+    </div>
+  </div>
+  <div class="form-overlay" id="errorOverlay">
+    <div class="overlay-card">
+      <div class="overlay-icon">⚠️</div>
+      <h2>Something Went Wrong</h2>
+      <p id="errorMessage">There was an issue submitting your request. Please try again.</p>
+      <button class="btn btn-primary" onclick="closeOverlay('errorOverlay')">Try Again</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    setupUploadZone('docsZone', 'docsFiles', 'docsFileList', true);
+
+    document.getElementById('proposalForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const prospectName = document.getElementById('prospectName').value.trim();
+      const userEmail    = document.getElementById('userEmail').value.trim();
+      const industry     = document.getElementById('industry').value.trim();
+      if (!prospectName || !userEmail || !industry) { showError('Please fill in all required fields.'); return; }
+      if (!isValidEmail(userEmail)) { showError('Please enter a valid email address.'); return; }
+
+      showOverlay('loadingOverlay');
+      try {
+        const formData = new FormData();
+        formData.append('tool', 'proposal');
+        formData.append('prospectName', prospectName);
+        formData.append('contactName', document.getElementById('contactName').value);
+        formData.append('contactTitle', document.getElementById('contactTitle').value);
+        formData.append('userEmail', userEmail);
+        formData.append('websiteUrl', document.getElementById('websiteUrl').value);
+        formData.append('industry', industry);
+        formData.append('companySize', document.getElementById('companySize').value);
+        formData.append('location', document.getElementById('location').value);
+        formData.append('painPoints', document.getElementById('painPoints').value);
+        formData.append('rolesToFill', document.getElementById('rolesToFill').value);
+        formData.append('budget', document.getElementById('budget').value);
+        formData.append('tone', document.getElementById('tone').value);
+        formData.append('additionalContext', document.getElementById('additionalContext').value);
+
+        // Collect checked services
+        const services = [...document.querySelectorAll('input[name="services"]:checked')].map(cb => cb.value);
+        formData.append('services', services.join(', '));
+
+        appendFiles(formData, 'docsFiles', 'docs');
+
+        const WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+        const response = await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
+        if (response.ok) { closeOverlay('loadingOverlay'); showOverlay('successOverlay'); }
+        else throw new Error('Server error ' + response.status);
+      } catch(err) {
+        closeOverlay('loadingOverlay');
+        showError('Unable to reach the automation server. Please try again.');
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
