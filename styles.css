@@ -67,40 +67,8 @@ h3 { font-size: 1.2rem; }
   align-items: center;
   gap: 12px;
 }
-.logo-icon {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 3px;
-  width: 30px;
-  height: 30px;
-}
-.logo-icon span {
-  background: var(--orange);
-  border-radius: 2px;
+.logo img {
   display: block;
-}
-.logo-icon span:nth-child(3),
-.logo-icon span:nth-child(6),
-.logo-icon span:nth-child(9) {
-  background: var(--gold);
-}
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-.logo-text .brand-name {
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--white);
-}
-.logo-text .brand-sub {
-  font-size: 0.55rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: var(--gray-light);
-  text-transform: uppercase;
 }
 
 .nav-links {
