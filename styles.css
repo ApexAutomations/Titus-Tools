@@ -31,42 +31,46 @@ body {
   color: var(--white);
   line-height: 1.6;
   min-height: 100vh;
-  isolation: isolate;
   position: relative;
+  /* NOTE: no isolation here — lets pseudo-elements escape into root stacking context */
 }
 
 /* ── Animated background blobs ── */
 body::before {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: -25%;          /* oversized so translate() never shows an edge */
+  width: 150%;
+  height: 150%;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 60% at 15% 25%, rgba(157,196,243,0.07) 0%, transparent 65%),
-    radial-gradient(ellipse 55% 65% at 85% 75%, rgba(244,198,3,0.05)   0%, transparent 65%),
-    radial-gradient(ellipse 45% 40% at 55%  5%, rgba(255,255,255,0.025) 0%, transparent 60%);
+    radial-gradient(ellipse 50% 40% at 28% 35%, rgba(157,196,243,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 50% at 78% 68%, rgba(244,198,3,0.15)   0%, transparent 70%),
+    radial-gradient(ellipse 35% 30% at 58%  8%, rgba(255,255,255,0.07)  0%, transparent 65%);
   animation: bgDriftA 22s ease-in-out infinite alternate;
 }
 body::after {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: -25%;
+  width: 150%;
+  height: 150%;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 50% at 75% 20%, rgba(157,196,243,0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 55% at 25% 80%, rgba(244,198,3,0.04)   0%, transparent 60%);
+    radial-gradient(ellipse 50% 45% at 72% 22%, rgba(157,196,243,0.15) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 50% at 22% 78%, rgba(244,198,3,0.12)   0%, transparent 65%);
   animation: bgDriftB 28s ease-in-out infinite alternate-reverse;
 }
 @keyframes bgDriftA {
-  0%   { transform: translate(0,   0)   scale(1);    }
-  50%  { transform: translate(8%,  6%)  scale(1.08); }
-  100% { transform: translate(-6%, 10%) scale(0.96); }
+  0%   { transform: translate(0,    0)   scale(1);    }
+  50%  { transform: translate(8%,   6%)  scale(1.08); }
+  100% { transform: translate(-6%,  10%) scale(0.96); }
 }
 @keyframes bgDriftB {
-  0%   { transform: translate(0,    0)    scale(1);    }
-  50%  { transform: translate(-10%, -5%)  scale(1.10); }
+  0%   { transform: translate(0,    0)   scale(1);    }
+  50%  { transform: translate(-10%, -5%) scale(1.10); }
   100% { transform: translate(5%,  -10%) scale(0.94); }
 }
 
