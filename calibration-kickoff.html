@@ -512,44 +512,30 @@
       document.getElementById('overlayEmail').textContent = userEmail;
       showOverlay('loadingOverlay');
 
-      // Step 1: Upload all files to GoFile.io
-      let logoResults, surveyResults, transcriptResults, docsResults;
+      // Build multipart payload and send directly to Make.com
       try {
-        [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
-          uploadListFiles('logoFileList'),
-          uploadListFiles('surveyFileList'),
-          uploadListFiles('transcriptFileList'),
-          uploadListFiles('docsFileList')
-        ]);
-      } catch (uploadErr) {
-        closeOverlay('loadingOverlay');
-        showError('File upload failed: ' + uploadErr.message);
-        console.error('File upload error:', uploadErr);
-        return;
-      }
+        const formData = new FormData();
+        formData.append('tool',        'calibration-kickoff');
+        formData.append('companyName', companyName);
+        formData.append('websiteUrl',  websiteUrl);
+        formData.append('userEmail',   userEmail);
 
-      // Step 2: Send JSON payload to webhook
-      try {
-        const surveyText = document.getElementById('surveyText').value.trim();
-        const payload = {
-          tool:            'calibration-kickoff',
-          companyName,
-          websiteUrl,
-          userEmail,
-          logo_url:        logoResults[0]?.url        ?? null,
-          survey_url:      surveyResults[0]?.url      ?? null,
-          survey_text:     surveyText                 || null,
-          transcript_url:  transcriptResults[0]?.url  ?? null,
-          docs_urls:       docsResults.map(r => r.url)
-        };
+        // Attach files using getFilesFromList so drag-and-drop files are included
+        const logoFiles       = getFilesFromList('logoFileList');
+        const surveyFiles     = getFilesFromList('surveyFileList');
+        const transcriptFiles = getFilesFromList('transcriptFileList');
+        const docsFiles       = getFilesFromList('docsFileList');
+        const surveyText      = document.getElementById('surveyText').value.trim();
+
+        if (logoFiles[0])       formData.append('logo',       logoFiles[0],       logoFiles[0].name);
+        if (surveyFiles[0])     formData.append('survey',     surveyFiles[0],     surveyFiles[0].name);
+        if (surveyText)         formData.append('surveyText', surveyText);
+        if (transcriptFiles[0]) formData.append('transcript', transcriptFiles[0], transcriptFiles[0].name);
+        docsFiles.forEach((f, i) => formData.append(`docs_${i}`, f, f.name));
 
         const WEBHOOK_URL = 'https://hook.us1.make.com/m13s74cmy92mkqtu5eobdjjzpq79iumv';
 
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        const response = await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
 
         if (response.ok) {
           localStorage.setItem('titus_user_email', userEmail);
@@ -557,12 +543,12 @@
           showOverlay('successOverlay');
         } else {
           const body = await response.text().catch(() => '');
-          throw new Error(`Automation server returned status ${response.status}${body ? ': ' + body.slice(0, 200) : ''}`);
+          throw new Error(`Server returned status ${response.status}${body ? ': ' + body.slice(0, 200) : ''}`);
         }
-      } catch (webhookErr) {
+      } catch (err) {
         closeOverlay('loadingOverlay');
-        showError('Submission failed: ' + webhookErr.message);
-        console.error('Webhook error:', webhookErr);
+        showError('Submission failed: ' + err.message);
+        console.error('Submit error:', err);
       }
     });
 
