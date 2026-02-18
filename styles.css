@@ -24,19 +24,60 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; background: var(--navy); }
 body {
   font-family: var(--font);
-  background: var(--navy);
+  background: transparent;
   color: var(--white);
   line-height: 1.6;
   min-height: 100vh;
+  isolation: isolate;
+  position: relative;
+}
+
+/* ── Animated background blobs ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 25%, rgba(157,196,243,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 65% at 85% 75%, rgba(244,198,3,0.05)   0%, transparent 65%),
+    radial-gradient(ellipse 45% 40% at 55%  5%, rgba(255,255,255,0.025) 0%, transparent 60%);
+  animation: bgDriftA 22s ease-in-out infinite alternate;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 75% 20%, rgba(157,196,243,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 55% at 25% 80%, rgba(244,198,3,0.04)   0%, transparent 60%);
+  animation: bgDriftB 28s ease-in-out infinite alternate-reverse;
+}
+@keyframes bgDriftA {
+  0%   { transform: translate(0,   0)   scale(1);    }
+  50%  { transform: translate(8%,  6%)  scale(1.08); }
+  100% { transform: translate(-6%, 10%) scale(0.96); }
+}
+@keyframes bgDriftB {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  50%  { transform: translate(-10%, -5%)  scale(1.10); }
+  100% { transform: translate(5%,  -10%) scale(0.94); }
 }
 
 a { color: inherit; text-decoration: none; }
 
 /* ── Typography ── */
-h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
+h1, h2, h3, h4 {
+  font-family: 'Space Grotesk', var(--font);
+  font-weight: 700;
+  line-height: 1.2;
+}
 h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
 h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
 h3 { font-size: 1.2rem; }
@@ -75,20 +116,27 @@ h3 { font-size: 1.2rem; }
 /* ── Site Header (homepage) ── */
 .site-header {
   text-align: center;
-  padding: 3rem 2rem 1rem;
-}
-.site-logo {
-  height: 72px;
-  width: auto;
-  display: block;
-  margin: 0 auto 1.2rem;
-  filter: invert(1);
+  padding: 5rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .site-title {
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: -0.02em;
+  font-family: 'Space Grotesk', var(--font);
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(157,196,243,0.85) 50%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  animation: shimmer 8s ease-in-out infinite alternate;
+}
+@keyframes shimmer {
+  0%   { background-position: 0%   50%; }
+  100% { background-position: 100% 50%; }
 }
 
 .nav-links {
