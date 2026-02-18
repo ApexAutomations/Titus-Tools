@@ -85,23 +85,21 @@ function getFilesFromList(listId) {
     .filter(Boolean);
 }
 
-// ── Upload a single File to GoFile.io, return { name, url } ──
+// ── Upload a single File to file.io, return { name, url } ──
 async function uploadFileForUrl(file) {
-  const serverRes = await fetch('https://api.gofile.io/servers');
-  if (!serverRes.ok) throw new Error('Could not reach file hosting service.');
-  const { data } = await serverRes.json();
-  const server = data.servers[0].name;
-
   const fd = new FormData();
   fd.append('file', file);
-  const uploadRes = await fetch(`https://${server}.gofile.io/contents/uploadfile`, {
-    method: 'POST',
-    body: fd
-  });
-  if (!uploadRes.ok) throw new Error('Upload failed for: ' + file.name);
-  const result = await uploadRes.json();
-  if (result.status !== 'ok') throw new Error('Upload rejected for: ' + file.name);
-  return { name: file.name, url: result.data.directLink };
+  fd.append('expires', '1d');      // keep for 1 day — enough for Make.com to download
+  fd.append('maxDownloads', '10'); // allow multiple download attempts
+
+  const res = await fetch('https://file.io', { method: 'POST', body: fd });
+  if (!res.ok) throw new Error(`Upload failed for "${file.name}" (HTTP ${res.status})`);
+
+  const json = await res.json();
+  if (!json.success || !json.link) {
+    throw new Error(`Upload rejected for "${file.name}": ${json.message || JSON.stringify(json)}`);
+  }
+  return { name: file.name, url: json.link };
 }
 
 // ── Upload all files in a list zone, return array of { name, url } ──
