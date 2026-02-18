@@ -531,12 +531,20 @@
       if (!valid) errorEl.textContent = msg;
     }
 
-    document.getElementById('websiteUrl').addEventListener('blur', function() {
-      const val = this.value.trim();
-      const err = document.getElementById('websiteUrlError');
-      if (!val) { this.classList.remove('valid','invalid'); err.classList.remove('visible'); return; }
-      setFieldState(this, err, isValidUrl(val), 'Please enter a valid website URL (e.g. https://example.com)');
-    });
+    (function() {
+      const input = document.getElementById('websiteUrl');
+      const err   = document.getElementById('websiteUrlError');
+      let touched = false;
+
+      function validate() {
+        const val = input.value.trim();
+        if (!val) { input.classList.remove('valid','invalid'); err.classList.remove('visible'); return; }
+        setFieldState(input, err, isValidUrl(val), 'Please enter a valid website URL (e.g. https://example.com)');
+      }
+
+      input.addEventListener('blur', function() { touched = true; validate(); });
+      input.addEventListener('input', function() { if (touched) validate(); });
+    })();
 
     document.getElementById('userEmail').addEventListener('blur', function() {
       const val = this.value.trim();
