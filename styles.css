@@ -79,7 +79,7 @@ h3 { font-size: 1.2rem; }
 /* ── Site Header (homepage) ── */
 .site-header {
   text-align: center;
-  padding: 1.75rem 2rem 0.75rem;
+  padding: 1.75rem 2rem 0.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,18 +117,20 @@ h3 { font-size: 1.2rem; }
   color: #555555;
   transition: all 0.2s;
 }
-.nav-links a:hover,
-.nav-links a.active {
+.nav-links a:hover {
   color: var(--navy);
   background: rgba(0,0,0,0.06);
 }
-.nav-links a.active { color: var(--orange); }
+.nav-links a.active {
+  color: var(--orange);
+  background: rgba(244,198,3,0.15);
+}
 
 /* ── Hero ── */
 .hero {
   position: relative;
   overflow: hidden;
-  padding: 80px 2rem 100px;
+  padding: 40px 2rem 80px;
   text-align: center;
 }
 .hero::before {
@@ -161,7 +163,7 @@ h3 { font-size: 1.2rem; }
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--gold);
   margin-bottom: 1.2rem;
 }
 .hero h1 span { color: var(--orange); }
