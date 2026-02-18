@@ -512,16 +512,24 @@
       document.getElementById('overlayEmail').textContent = userEmail;
       showOverlay('loadingOverlay');
 
+      // Step 1: Upload all files to GoFile.io
+      let logoResults, surveyResults, transcriptResults, docsResults;
       try {
-        // Step 1: Upload all files to GoFile.io and collect public URLs
-        const [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
+        [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
           uploadListFiles('logoFileList'),
           uploadListFiles('surveyFileList'),
           uploadListFiles('transcriptFileList'),
           uploadListFiles('docsFileList')
         ]);
+      } catch (uploadErr) {
+        closeOverlay('loadingOverlay');
+        showError('File upload failed: ' + uploadErr.message);
+        console.error('File upload error:', uploadErr);
+        return;
+      }
 
-        // Step 2: Build JSON payload with public download URLs
+      // Step 2: Send JSON payload to webhook
+      try {
         const surveyText = document.getElementById('surveyText').value.trim();
         const payload = {
           tool:            'calibration-kickoff',
@@ -548,12 +556,13 @@
           closeOverlay('loadingOverlay');
           showOverlay('successOverlay');
         } else {
-          throw new Error('Server responded with ' + response.status);
+          const body = await response.text().catch(() => '');
+          throw new Error(`Automation server returned status ${response.status}${body ? ': ' + body.slice(0, 200) : ''}`);
         }
-      } catch (err) {
+      } catch (webhookErr) {
         closeOverlay('loadingOverlay');
-        showError('Unable to reach the automation server. Please check your connection and try again.');
-        console.error(err);
+        showError('Submission failed: ' + webhookErr.message);
+        console.error('Webhook error:', webhookErr);
       }
     });
 
