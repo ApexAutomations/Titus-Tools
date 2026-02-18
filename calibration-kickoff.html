@@ -140,6 +140,10 @@
       display: none;
     }
     .field-error.visible { display: block; }
+    .upload-zone.required-error {
+      border-color: #e05c5c;
+      background: rgba(224,92,92,0.05);
+    }
 
     /* Side-by-side upload blocks */
     .upload-row {
@@ -296,7 +300,7 @@
           <!-- Company Logo + Kickoff Call Transcript (side by side) -->
           <div class="upload-row">
             <div class="form-block">
-              <div class="form-block-title">Company Logo</div>
+              <div class="form-block-title">Company Logo <span class="req">*</span></div>
               <div class="upload-zone" id="logoZone">
                 <input type="file" id="logoFile" name="logoFile" accept="image/*,.svg,.eps,.ai" />
                 <div class="upload-icon">🖼️</div>
@@ -363,7 +367,7 @@
 
         <!-- Submit Bar -->
         <div class="submit-bar">
-          <p>Fields marked <strong style="color:var(--orange);">*</strong> are required. Files are optional but recommended.</p>
+          <p>Fields marked <strong style="color:var(--orange);">*</strong> are required. Other files are optional but recommended.</p>
           <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
             <span>Generate Strategy Document</span>
             <span>&#9654;</span>
@@ -416,6 +420,13 @@
   <script>
     // File upload UI
     setupUploadZone('logoZone', 'logoFile', 'logoFileList', false);
+    // Clear logo required-error as soon as a file is added
+    document.getElementById('logoFile').addEventListener('change', function() {
+      if (this.files.length) document.getElementById('logoZone').classList.remove('required-error');
+    });
+    document.getElementById('logoZone').addEventListener('drop', function() {
+      document.getElementById('logoZone').classList.remove('required-error');
+    });
     setupUploadZone('surveyZone', 'surveyFile', 'surveyFileList', false);
     setupUploadZone('transcriptZone', 'transcriptFile', 'transcriptFileList', false);
     setupUploadZone('docsZone', 'docsFiles', 'docsFileList', true);
@@ -457,18 +468,37 @@
       const companyName = document.getElementById('companyName').value.trim();
       let   websiteUrl  = document.getElementById('websiteUrl').value.trim();
       const userEmail   = document.getElementById('userEmail').value.trim();
+      const logoInput   = document.getElementById('logoFile');
+      const hasLogo     = (logoInput.files && logoInput.files.length > 0) ||
+                          document.getElementById('logoFileList').children.length > 0;
 
-      if (!companyName || !userEmail) {
-        showError('Please fill in all required fields (Company Name and Email).');
+      // Clear previous logo error
+      document.getElementById('logoZone').classList.remove('required-error');
+
+      if (!companyName) {
+        showError('Please enter the Company Name.');
         return;
       }
-      if (websiteUrl && !isValidUrl(websiteUrl)) {
+      if (!websiteUrl) {
+        showError('Please enter the Company Website URL.');
+        return;
+      }
+      if (!isValidUrl(websiteUrl)) {
         showError('Please enter a valid website URL (e.g. https://example.com).');
         return;
       }
       websiteUrl = normalizeUrl(websiteUrl);
+      if (!userEmail) {
+        showError('Please enter your Email Address.');
+        return;
+      }
       if (!isValidEmail(userEmail)) {
         showError('Please enter a valid email address.');
+        return;
+      }
+      if (!hasLogo) {
+        document.getElementById('logoZone').classList.add('required-error');
+        showError('Please upload the Company Logo.');
         return;
       }
 
