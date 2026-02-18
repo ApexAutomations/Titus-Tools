@@ -69,7 +69,7 @@ h3 { font-size: 1.2rem; }
   gap: 12px;
 }
 .logo img {
-  display: block;
+  display: none;
 }
 
 .nav-links {
