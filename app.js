@@ -96,11 +96,11 @@ function formatBytes(bytes) {
   // spread across the screen and out of sync with each other.
   const WAVES = [
     //  r    g    b    xPhase  yPhase  xFreq   yFreq   alpha
-    { r:157, g:196, b:243, px:0.00, py:0.00, fx:0.38, fy:0.27, a:0.10 }, // blue A
-    { r:244, g:198, b:  3, px:2.09, py:1.26, fx:0.29, fy:0.47, a:0.07 }, // yellow A
-    { r:255, g:255, b:255, px:4.19, py:2.72, fx:0.55, fy:0.38, a:0.04 }, // white
-    { r:157, g:196, b:243, px:1.05, py:3.14, fx:0.47, fy:0.21, a:0.07 }, // blue B
-    { r:244, g:198, b:  3, px:3.14, py:0.71, fx:0.21, fy:0.58, a:0.05 }, // yellow B
+    { r:157, g:196, b:243, px:0.00, py:0.00, fx:0.38, fy:0.27, a:0.28 }, // blue A
+    { r:244, g:198, b:  3, px:2.09, py:1.26, fx:0.29, fy:0.47, a:0.20 }, // yellow A
+    { r:255, g:255, b:255, px:4.19, py:2.72, fx:0.55, fy:0.38, a:0.10 }, // white
+    { r:157, g:196, b:243, px:1.05, py:3.14, fx:0.47, fy:0.21, a:0.22 }, // blue B
+    { r:244, g:198, b:  3, px:3.14, py:0.71, fx:0.21, fy:0.58, a:0.15 }, // yellow B
   ];
 
   let W, H, noisePattern, t = 0;
@@ -131,9 +131,9 @@ function formatBytes(bytes) {
       const cy = H * (0.1 + 0.8 * sinN(t * w.fy + w.py));
       const r  = Math.hypot(W, H) * 0.65;
       const g  = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      g.addColorStop(0,    `rgba(${w.r},${w.g},${w.b},${w.a})`);
-      g.addColorStop(0.45, `rgba(${w.r},${w.g},${w.b},${+(w.a * 0.1).toFixed(3)})`);
-      g.addColorStop(1,    `rgba(0,0,0,0)`);
+      g.addColorStop(0,   `rgba(${w.r},${w.g},${w.b},${w.a})`);
+      g.addColorStop(0.6, `rgba(${w.r},${w.g},${w.b},${+(w.a * 0.2).toFixed(3)})`);
+      g.addColorStop(1,   `rgba(0,0,0,0)`);
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
     }
@@ -143,7 +143,7 @@ function formatBytes(bytes) {
     // Gives the background a fine-grained texture so the color
     // waves feel particulate rather than smooth.
     ctx.globalCompositeOperation = 'screen';
-    ctx.globalAlpha = 0.032;
+    ctx.globalAlpha = 0.055;
     ctx.fillStyle = noisePattern;
     ctx.fillRect(0, 0, W, H);
 
