@@ -472,35 +472,42 @@
       const hasLogo     = (logoInput.files && logoInput.files.length > 0) ||
                           document.getElementById('logoFileList').children.length > 0;
 
-      // Clear previous logo error
-      document.getElementById('logoZone').classList.remove('required-error');
+      // Collect ALL validation errors before showing anything
+      const errors = [];
 
       if (!companyName) {
-        showError('Please enter the Company Name.');
-        return;
+        errors.push('Company Name is required');
       }
       if (!websiteUrl) {
-        showError('Please enter the Company Website URL.');
-        return;
+        errors.push('Company Website URL is required');
+      } else if (!isValidUrl(websiteUrl)) {
+        errors.push('Company Website must be a valid URL (e.g. https://example.com)');
       }
-      if (!isValidUrl(websiteUrl)) {
-        showError('Please enter a valid website URL (e.g. https://example.com).');
-        return;
-      }
-      websiteUrl = normalizeUrl(websiteUrl);
       if (!userEmail) {
-        showError('Please enter your Email Address.');
-        return;
-      }
-      if (!isValidEmail(userEmail)) {
-        showError('Please enter a valid email address.');
-        return;
+        errors.push('Email Address is required');
+      } else if (!isValidEmail(userEmail)) {
+        errors.push('Email Address must be a valid format');
       }
       if (!hasLogo) {
-        document.getElementById('logoZone').classList.add('required-error');
-        showError('Please upload the Company Logo.');
+        errors.push('Company Logo is required');
+      }
+
+      // Highlight logo zone if logo is missing
+      document.getElementById('logoZone').classList.toggle('required-error', !hasLogo);
+
+      if (errors.length) {
+        const el = document.getElementById('errorMessage');
+        if (el) {
+          el.innerHTML = errors.length === 1
+            ? errors[0]
+            : 'Please fix the following before submitting:<ul style="margin:0.6rem 0 0;padding-left:1.3rem;text-align:left;line-height:1.8;">' +
+              errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+        }
+        showOverlay('errorOverlay');
         return;
       }
+
+      websiteUrl = normalizeUrl(websiteUrl);
 
       document.getElementById('overlayEmail').textContent = userEmail;
       showOverlay('loadingOverlay');
