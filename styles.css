@@ -72,6 +72,24 @@ h3 { font-size: 1.2rem; }
   display: none;
 }
 
+/* ── Site Header (homepage) ── */
+.site-header {
+  text-align: center;
+  padding: 3rem 2rem 1rem;
+}
+.site-logo {
+  height: 72px;
+  width: auto;
+  display: block;
+  margin: 0 auto 1.2rem;
+}
+.site-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
