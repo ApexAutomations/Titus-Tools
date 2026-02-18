@@ -85,21 +85,41 @@ function getFilesFromList(listId) {
     .filter(Boolean);
 }
 
-// ── Upload a single File to file.io, return { name, url } ──
+// ── Upload a single File to a public host, return { name, url } ──
+// Tries filebin.net first (confirmed CORS support), falls back to file.io.
 async function uploadFileForUrl(file) {
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('expires', '1d');      // keep for 1 day — enough for Make.com to download
-  fd.append('maxDownloads', '10'); // allow multiple download attempts
+  const errors = [];
 
-  const res = await fetch('https://file.io', { method: 'POST', body: fd });
-  if (!res.ok) throw new Error(`Upload failed for "${file.name}" (HTTP ${res.status})`);
+  // 1) filebin.net — confirmed Access-Control-Allow-Origin: *
+  try {
+    const bin = 'titus-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const safeName = encodeURIComponent(file.name);
+    const res = await fetch(`https://filebin.net/${bin}/${safeName}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: file
+    });
+    if (res.ok) {
+      return { name: file.name, url: `https://filebin.net/${bin}/${safeName}` };
+    }
+    errors.push(`filebin.net HTTP ${res.status}`);
+  } catch (e) { errors.push('filebin.net: ' + e.message); }
 
-  const json = await res.json();
-  if (!json.success || !json.link) {
-    throw new Error(`Upload rejected for "${file.name}": ${json.message || JSON.stringify(json)}`);
-  }
-  return { name: file.name, url: json.link };
+  // 2) file.io fallback
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('expires', '1d');
+    fd.append('maxDownloads', '10');
+    const res = await fetch('https://file.io', { method: 'POST', body: fd });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.link) return { name: file.name, url: json.link };
+      errors.push('file.io: ' + (json.message || 'no link'));
+    } else { errors.push(`file.io HTTP ${res.status}`); }
+  } catch (e) { errors.push('file.io: ' + e.message); }
+
+  throw new Error(`All uploads failed for "${file.name}": ${errors.join('; ')}`);
 }
 
 // ── Upload all files in a list zone, return array of { name, url } ──
