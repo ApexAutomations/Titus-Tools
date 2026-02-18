@@ -387,8 +387,8 @@
   <div class="form-overlay" id="loadingOverlay">
     <div class="overlay-card">
       <div class="spinner"></div>
-      <h2>Generating Your Document</h2>
-      <p>We're analyzing your materials and building your calibration &amp; kickoff strategy document. This may take a moment.</p>
+      <h2>Uploading &amp; Generating</h2>
+      <p>Uploading your files and building the calibration &amp; kickoff strategy document. This may take a moment.</p>
       <p style="font-size:0.75rem;color:var(--gray-mid);margin-top:-1rem;">You'll receive a copy at <span id="overlayEmail" style="color:var(--gold);"></span></p>
     </div>
   </div>
@@ -506,24 +506,34 @@
       showOverlay('loadingOverlay');
 
       try {
-        const formData = new FormData();
-        formData.append('tool', 'calibration-kickoff');
-        formData.append('companyName', companyName);
-        formData.append('websiteUrl', websiteUrl);
-        formData.append('userEmail', userEmail);
+        // Step 1: Upload all files to GoFile.io and collect public URLs
+        const [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
+          uploadListFiles('logoFileList'),
+          uploadListFiles('surveyFileList'),
+          uploadListFiles('transcriptFileList'),
+          uploadListFiles('docsFileList')
+        ]);
 
-        appendFiles(formData, 'logoFile',      'logo');
-        appendFiles(formData, 'surveyFile',    'survey');
+        // Step 2: Build JSON payload with public download URLs
         const surveyText = document.getElementById('surveyText').value.trim();
-        if (surveyText) formData.append('surveyText', surveyText);
-        appendFiles(formData, 'transcriptFile','transcript');
-        appendFiles(formData, 'docsFiles',     'docs');
+        const payload = {
+          tool:            'calibration-kickoff',
+          companyName,
+          websiteUrl,
+          userEmail,
+          logo_url:        logoResults[0]?.url        ?? null,
+          survey_url:      surveyResults[0]?.url      ?? null,
+          survey_text:     surveyText                 || null,
+          transcript_url:  transcriptResults[0]?.url  ?? null,
+          docs_urls:       docsResults.map(r => r.url)
+        };
 
         const WEBHOOK_URL = 'https://hook.us1.make.com/m13s74cmy92mkqtu5eobdjjzpq79iumv';
 
         const response = await fetch(WEBHOOK_URL, {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
 
         if (response.ok) {

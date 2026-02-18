@@ -66,6 +66,7 @@ function renderFiles(listEl, files, multiple) {
   Array.from(files).forEach(file => {
     const item = document.createElement('div');
     item.className = 'file-item';
+    item._file = file; // store File reference for later retrieval
     item.innerHTML = `
       <span>📄</span>
       <span class="file-name" title="${file.name}">${file.name}</span>
@@ -75,6 +76,39 @@ function renderFiles(listEl, files, multiple) {
     item.querySelector('.remove-file').addEventListener('click', () => item.remove());
     listEl.appendChild(item);
   });
+}
+
+// ── Retrieve File objects from a rendered file list ───
+function getFilesFromList(listId) {
+  return Array.from(document.getElementById(listId).querySelectorAll('.file-item'))
+    .map(item => item._file)
+    .filter(Boolean);
+}
+
+// ── Upload a single File to GoFile.io, return { name, url } ──
+async function uploadFileForUrl(file) {
+  const serverRes = await fetch('https://api.gofile.io/servers');
+  if (!serverRes.ok) throw new Error('Could not reach file hosting service.');
+  const { data } = await serverRes.json();
+  const server = data.servers[0].name;
+
+  const fd = new FormData();
+  fd.append('file', file);
+  const uploadRes = await fetch(`https://${server}.gofile.io/contents/uploadfile`, {
+    method: 'POST',
+    body: fd
+  });
+  if (!uploadRes.ok) throw new Error('Upload failed for: ' + file.name);
+  const result = await uploadRes.json();
+  if (result.status !== 'ok') throw new Error('Upload rejected for: ' + file.name);
+  return { name: file.name, url: result.data.directLink };
+}
+
+// ── Upload all files in a list zone, return array of { name, url } ──
+async function uploadListFiles(listId) {
+  const files = getFilesFromList(listId);
+  if (!files.length) return [];
+  return Promise.all(files.map(uploadFileForUrl));
 }
 
 function formatBytes(bytes) {
