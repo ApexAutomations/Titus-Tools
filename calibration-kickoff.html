@@ -129,6 +129,55 @@
     .tip-box .tip-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
     .tip-box p { font-size: 0.8rem; color: var(--gray-light); margin: 0; }
     .tip-box strong { color: var(--gold); }
+
+    /* Side-by-side upload blocks */
+    .upload-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 640px) {
+      .upload-row { grid-template-columns: 1fr; }
+    }
+
+    /* Survey input tabs */
+    .input-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .input-tab {
+      padding: 0.35rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--gray-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .input-tab.active {
+      background: rgba(157,196,243,0.15);
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+    .survey-paste {
+      width: 100%;
+      min-height: 160px;
+      background: var(--navy);
+      border: 2px dashed var(--gray-mid);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      font-family: var(--font);
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+    .survey-paste::placeholder { color: var(--gray-mid); }
+    .survey-paste:focus { outline: none; border-color: var(--orange); }
   </style>
 </head>
 <body>
@@ -231,47 +280,55 @@
         </div>
         <div class="form-body">
 
-          <!-- Company Logo -->
-          <div class="form-block">
-            <div class="form-block-title">Company Logo</div>
-            <div class="upload-zone" id="logoZone">
-              <input type="file" id="logoFile" name="logoFile" accept="image/*,.svg,.eps,.ai" />
-              <div class="upload-icon">🖼️</div>
-              <div class="upload-label">Upload Company Logo</div>
-              <p>Click to browse or drag and drop</p>
-              <div class="file-types">PNG, JPG, SVG, EPS, AI accepted</div>
+          <!-- Company Logo + Kickoff Call Transcript (side by side) -->
+          <div class="upload-row">
+            <div class="form-block">
+              <div class="form-block-title">Company Logo</div>
+              <div class="upload-zone" id="logoZone">
+                <input type="file" id="logoFile" name="logoFile" accept="image/*,.svg,.eps,.ai" />
+                <div class="upload-icon">🖼️</div>
+                <div class="upload-label">Upload Company Logo</div>
+                <p>Click to browse or drag and drop</p>
+                <div class="file-types">PNG, JPG, SVG, EPS, AI accepted</div>
+              </div>
+              <div class="file-list" id="logoFileList"></div>
             </div>
-            <div class="file-list" id="logoFileList"></div>
+
+            <div class="form-block">
+              <div class="form-block-title">Kickoff Call Transcript</div>
+              <div class="upload-zone" id="transcriptZone">
+                <input type="file" id="transcriptFile" name="transcriptFile" accept=".pdf,.doc,.docx,.txt,.vtt,.srt" />
+                <div class="upload-icon">🎙️</div>
+                <div class="upload-label">Upload Call Transcript</div>
+                <p>Click to browse or drag and drop</p>
+                <div class="file-types">PDF, Word, TXT, VTT, SRT accepted</div>
+              </div>
+              <div class="file-list" id="transcriptFileList"></div>
+            </div>
           </div>
 
           <hr class="form-divider" />
 
-          <!-- Kickoff Survey -->
+          <!-- Kickoff Survey (upload or paste) -->
           <div class="form-block">
             <div class="form-block-title">Kickoff Survey</div>
-            <div class="upload-zone" id="surveyZone">
-              <input type="file" id="surveyFile" name="surveyFile" accept=".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx" />
-              <div class="upload-icon">📋</div>
-              <div class="upload-label">Upload Kickoff Survey</div>
-              <p>Click to browse or drag and drop</p>
-              <div class="file-types">PDF, Word, Excel, CSV, TXT accepted</div>
+            <div class="input-tabs">
+              <button type="button" class="input-tab active" onclick="switchSurveyTab('upload')">Upload File</button>
+              <button type="button" class="input-tab" onclick="switchSurveyTab('paste')">Paste Text</button>
             </div>
-            <div class="file-list" id="surveyFileList"></div>
-          </div>
-
-          <hr class="form-divider" />
-
-          <!-- Kickoff Call Transcript -->
-          <div class="form-block">
-            <div class="form-block-title">Kickoff Call Transcript</div>
-            <div class="upload-zone" id="transcriptZone">
-              <input type="file" id="transcriptFile" name="transcriptFile" accept=".pdf,.doc,.docx,.txt,.vtt,.srt" />
-              <div class="upload-icon">🎙️</div>
-              <div class="upload-label">Upload Call Transcript</div>
-              <p>Click to browse or drag and drop</p>
-              <div class="file-types">PDF, Word, TXT, VTT, SRT accepted</div>
+            <div id="surveyUploadPanel">
+              <div class="upload-zone" id="surveyZone">
+                <input type="file" id="surveyFile" name="surveyFile" accept=".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx" />
+                <div class="upload-icon">📋</div>
+                <div class="upload-label">Upload Kickoff Survey</div>
+                <p>Click to browse or drag and drop</p>
+                <div class="file-types">PDF, Word, Excel, CSV, TXT accepted</div>
+              </div>
+              <div class="file-list" id="surveyFileList"></div>
             </div>
-            <div class="file-list" id="transcriptFileList"></div>
+            <div id="surveyPastePanel" style="display:none;">
+              <textarea id="surveyText" name="surveyText" class="survey-paste" placeholder="Paste your kickoff survey responses here…"></textarea>
+            </div>
           </div>
 
           <hr class="form-divider" />
@@ -350,6 +407,23 @@
     setupUploadZone('transcriptZone', 'transcriptFile', 'transcriptFileList', false);
     setupUploadZone('docsZone', 'docsFiles', 'docsFileList', true);
 
+    // Survey tab toggle
+    function switchSurveyTab(tab) {
+      const uploadPanel = document.getElementById('surveyUploadPanel');
+      const pastePanel  = document.getElementById('surveyPastePanel');
+      const tabs = document.querySelectorAll('.input-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      if (tab === 'upload') {
+        uploadPanel.style.display = '';
+        pastePanel.style.display  = 'none';
+        tabs[0].classList.add('active');
+      } else {
+        uploadPanel.style.display = 'none';
+        pastePanel.style.display  = '';
+        tabs[1].classList.add('active');
+      }
+    }
+
     // Step indicator update on scroll/interaction
     document.getElementById('calibrationForm').addEventListener('change', updateSteps);
 
@@ -392,6 +466,8 @@
 
         appendFiles(formData, 'logoFile',      'logo');
         appendFiles(formData, 'surveyFile',    'survey');
+        const surveyText = document.getElementById('surveyText').value.trim();
+        if (surveyText) formData.append('surveyText', surveyText);
         appendFiles(formData, 'transcriptFile','transcript');
         appendFiles(formData, 'docsFiles',     'docs');
 
@@ -420,6 +496,8 @@
       ['logoFileList','surveyFileList','transcriptFileList','docsFileList'].forEach(id => {
         document.getElementById(id).innerHTML = '';
       });
+      document.getElementById('surveyText').value = '';
+      switchSurveyTab('upload');
       closeOverlay('successOverlay');
     }
   </script>
