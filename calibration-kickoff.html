@@ -22,7 +22,7 @@
     .upload-zone:hover,
     .upload-zone.dragover {
       border-color: var(--orange);
-      background: rgba(232, 96, 44, 0.05);
+      background: rgba(157,196,243, 0.05);
     }
     .upload-zone input[type="file"] {
       position: absolute;
@@ -59,8 +59,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(232, 96, 44, 0.08);
-      border: 1px solid rgba(232, 96, 44, 0.2);
+      background: rgba(157,196,243, 0.08);
+      border: 1px solid rgba(157,196,243, 0.2);
       border-radius: 6px;
       padding: 0.4rem 0.75rem;
       font-size: 0.8rem;
@@ -117,8 +117,8 @@
 
     /* Tip box */
     .tip-box {
-      background: rgba(245, 166, 35, 0.06);
-      border: 1px solid rgba(245, 166, 35, 0.2);
+      background: rgba(244,198,3, 0.06);
+      border: 1px solid rgba(244,198,3, 0.2);
       border-radius: 8px;
       padding: 0.9rem 1.1rem;
       display: flex;
@@ -155,7 +155,7 @@
     <div class="page-header-inner">
       <a href="index.html" class="back-link">&#8592; Back to Tools</a>
       <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-        <div class="tool-icon" style="width:52px;height:52px;font-size:1.5rem;border-radius:12px;background:rgba(232,96,44,0.15);display:flex;align-items:center;justify-content:center;">🎯</div>
+        <div class="tool-icon" style="width:52px;height:52px;font-size:1.5rem;border-radius:12px;background:rgba(157,196,243,0.15);display:flex;align-items:center;justify-content:center;">🎯</div>
         <div>
           <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
             <h1 style="font-size:1.8rem;">Calibration &amp; Kickoff Strategy</h1>
@@ -395,7 +395,7 @@
         appendFiles(formData, 'transcriptFile','transcript');
         appendFiles(formData, 'docsFiles',     'docs');
 
-        const WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+        const WEBHOOK_URL = 'https://hook.us1.make.com/m13s74cmy92mkqtu5eobdjjzpq79iumv';
 
         const response = await fetch(WEBHOOK_URL, {
           method: 'POST',

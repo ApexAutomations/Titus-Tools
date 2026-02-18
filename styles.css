@@ -1,15 +1,16 @@
 /* =====================================================
    TITUS TALENT STRATEGIES - Tools Portal
-   Brand: Dark Navy | Orange | Gold | White
+   Brand: Black | Blue | Yellow | White
    ===================================================== */
 
 :root {
-  --navy:       #0D1B2A;
-  --navy-mid:   #152436;
-  --navy-light: #1E3248;
-  --orange:     #E8602C;
-  --orange-hover: #CF4E1E;
-  --gold:       #F5A623;
+  --navy:       #0F0F0F;
+  --navy-mid:   #1A1A1A;
+  --navy-light: #242424;
+  --orange:     #9DC4F3;
+  --orange-hover: #7AAEE8;
+  --gold:       #F4C603;
+  --blue-light: #D0E6FA;
   --white:      #FFFFFF;
   --off-white:  #F4F6F8;
   --gray-light: #8A9BAD;
@@ -49,7 +50,7 @@ h3 { font-size: 1.2rem; }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(13, 27, 42, 0.95);
+  background: rgba(15,15,15, 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 0 2rem;
@@ -105,7 +106,7 @@ h3 { font-size: 1.2rem; }
   position: absolute;
   top: -120px; right: -180px;
   width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(232,96,44,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(157,196,243,0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -114,7 +115,7 @@ h3 { font-size: 1.2rem; }
   position: absolute;
   bottom: -100px; left: -150px;
   width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(74,144,217,0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(157,196,243,0.1) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -156,9 +157,9 @@ h3 { font-size: 1.2rem; }
 }
 .btn-primary {
   background: var(--orange);
-  color: var(--white);
+  color: var(--navy);
 }
-.btn-primary:hover { background: var(--orange-hover); transform: translateY(-1px); }
+.btn-primary:hover { background: var(--orange-hover); color: var(--navy); transform: translateY(-1px); }
 .btn-outline {
   background: transparent;
   color: var(--gold);
@@ -216,28 +217,28 @@ h3 { font-size: 1.2rem; }
   transition: opacity 0.25s;
 }
 .tool-card:hover {
-  border-color: rgba(232, 96, 44, 0.4);
+  border-color: rgba(157,196,243, 0.4);
   transform: translateY(-3px);
   box-shadow: var(--shadow);
 }
 .tool-card:hover::before { opacity: 1; }
 
 .tool-card.featured {
-  border-color: rgba(232, 96, 44, 0.5);
-  background: linear-gradient(135deg, var(--navy-mid), #1e2d3e);
+  border-color: rgba(157,196,243, 0.5);
+  background: linear-gradient(135deg, var(--navy-mid), #222222);
 }
 .tool-card.featured::before { opacity: 1; }
 
 .tool-icon {
   width: 48px; height: 48px;
   border-radius: 12px;
-  background: rgba(232, 96, 44, 0.12);
+  background: rgba(157,196,243, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
 }
-.tool-card.featured .tool-icon { background: rgba(232, 96, 44, 0.2); }
+.tool-card.featured .tool-icon { background: rgba(157,196,243, 0.2); }
 
 .badge {
   display: inline-block;
@@ -247,14 +248,14 @@ h3 { font-size: 1.2rem; }
   text-transform: uppercase;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  background: rgba(232, 96, 44, 0.15);
+  background: rgba(157,196,243, 0.15);
   color: var(--orange);
-  border: 1px solid rgba(232, 96, 44, 0.3);
+  border: 1px solid rgba(157,196,243, 0.3);
 }
 .badge.gold {
-  background: rgba(245, 166, 35, 0.15);
+  background: rgba(244,198,3, 0.15);
   color: var(--gold);
-  border-color: rgba(245, 166, 35, 0.3);
+  border-color: rgba(244,198,3, 0.3);
 }
 
 .tool-card h3 { font-size: 1.1rem; }
@@ -375,7 +376,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(232, 96, 44, 0.12);
+  box-shadow: 0 0 0 3px rgba(157,196,243, 0.12);
 }
 select { cursor: pointer; }
 select option { background: var(--navy-mid); }
@@ -405,7 +406,7 @@ textarea { resize: vertical; min-height: 100px; }
 }
 .radio-pill input:checked + label {
   border-color: var(--orange);
-  background: rgba(232, 96, 44, 0.12);
+  background: rgba(157,196,243, 0.12);
   color: var(--orange);
 }
 .radio-pill label:hover { border-color: var(--orange); color: var(--white); }
@@ -462,7 +463,7 @@ textarea { resize: vertical; min-height: 100px; }
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(13, 27, 42, 0.85);
+  background: rgba(15,15,15, 0.85);
   backdrop-filter: blur(6px);
   z-index: 200;
   align-items: center;
@@ -487,7 +488,7 @@ textarea { resize: vertical; min-height: 100px; }
 .overlay-icon {
   width: 64px; height: 64px;
   border-radius: 50%;
-  background: rgba(232, 96, 44, 0.12);
+  background: rgba(157,196,243, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -500,7 +501,7 @@ textarea { resize: vertical; min-height: 100px; }
 /* Loading spinner */
 .spinner {
   width: 40px; height: 40px;
-  border: 3px solid rgba(232, 96, 44, 0.2);
+  border: 3px solid rgba(157,196,243, 0.2);
   border-top-color: var(--orange);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
