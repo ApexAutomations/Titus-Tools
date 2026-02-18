@@ -130,6 +130,17 @@
     .tip-box p { font-size: 0.8rem; color: var(--gray-light); margin: 0; }
     .tip-box strong { color: var(--gold); }
 
+    /* Field validation states */
+    .field input.invalid { border-color: #e05c5c !important; box-shadow: 0 0 0 3px rgba(224,92,92,0.12) !important; }
+    .field input.valid   { border-color: #5cb85c !important; box-shadow: 0 0 0 3px rgba(92,184,92,0.10) !important; }
+    .field-error {
+      font-size: 0.73rem;
+      color: #e05c5c;
+      margin-top: -0.15rem;
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
     /* Side-by-side upload blocks */
     .upload-row {
       display: grid;
@@ -262,12 +273,14 @@
 
             <div class="field">
               <label for="websiteUrl">Company Website <span class="req">*</span></label>
-              <input type="text" id="websiteUrl" name="websiteUrl" placeholder="https://www.example.com" required />
+              <input type="text" id="websiteUrl" name="websiteUrl" placeholder="https://www.example.com" autocomplete="url" required />
+              <span class="field-error" id="websiteUrlError">Please enter a valid website URL (e.g. https://example.com)</span>
             </div>
 
             <div class="field span-2">
               <label for="userEmail">Your Email Address <span class="req">*</span></label>
-              <input type="email" id="userEmail" name="userEmail" placeholder="you@titustalent.com" required />
+              <input type="email" id="userEmail" name="userEmail" placeholder="you@titustalent.com" autocomplete="email" required />
+              <span class="field-error" id="userEmailError">Please enter a valid email address</span>
             </div>
 
           </div>
@@ -442,13 +455,18 @@
       e.preventDefault();
 
       const companyName = document.getElementById('companyName').value.trim();
-      const websiteUrl  = document.getElementById('websiteUrl').value.trim();
+      let   websiteUrl  = document.getElementById('websiteUrl').value.trim();
       const userEmail   = document.getElementById('userEmail').value.trim();
 
       if (!companyName || !userEmail) {
         showError('Please fill in all required fields (Company Name and Email).');
         return;
       }
+      if (websiteUrl && !isValidUrl(websiteUrl)) {
+        showError('Please enter a valid website URL (e.g. https://example.com).');
+        return;
+      }
+      websiteUrl = normalizeUrl(websiteUrl);
       if (!isValidEmail(userEmail)) {
         showError('Please enter a valid email address.');
         return;
@@ -479,6 +497,7 @@
         });
 
         if (response.ok) {
+          localStorage.setItem('titus_user_email', userEmail);
           closeOverlay('loadingOverlay');
           showOverlay('successOverlay');
         } else {
@@ -497,9 +516,40 @@
         document.getElementById(id).innerHTML = '';
       });
       document.getElementById('surveyText').value = '';
+      // Restore saved email after reset clears it
+      const saved = localStorage.getItem('titus_user_email');
+      if (saved) document.getElementById('userEmail').value = saved;
       switchSurveyTab('upload');
       closeOverlay('successOverlay');
     }
+
+    // ── Inline field validation ──────────────────────────
+    function setFieldState(inputEl, errorEl, valid, msg) {
+      inputEl.classList.toggle('valid', valid);
+      inputEl.classList.toggle('invalid', !valid);
+      errorEl.classList.toggle('visible', !valid);
+      if (!valid) errorEl.textContent = msg;
+    }
+
+    document.getElementById('websiteUrl').addEventListener('blur', function() {
+      const val = this.value.trim();
+      const err = document.getElementById('websiteUrlError');
+      if (!val) { this.classList.remove('valid','invalid'); err.classList.remove('visible'); return; }
+      setFieldState(this, err, isValidUrl(val), 'Please enter a valid website URL (e.g. https://example.com)');
+    });
+
+    document.getElementById('userEmail').addEventListener('blur', function() {
+      const val = this.value.trim();
+      const err = document.getElementById('userEmailError');
+      if (!val) { this.classList.remove('valid','invalid'); err.classList.remove('visible'); return; }
+      setFieldState(this, err, isValidEmail(val), 'Please enter a valid email address');
+    });
+
+    // ── localStorage email memory ────────────────────────
+    (function() {
+      const saved = localStorage.getItem('titus_user_email');
+      if (saved) document.getElementById('userEmail').value = saved;
+    })();
   </script>
 </body>
 </html>

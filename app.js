@@ -21,6 +21,21 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+// ── URL validation ────────────────────────────────────
+function isValidUrl(str) {
+  try {
+    const normalized = /^https?:\/\//i.test(str) ? str : 'https://' + str;
+    const url = new URL(normalized);
+    return url.hostname.includes('.');
+  } catch { return false; }
+}
+
+// Normalize a URL string (prepend https:// if no protocol)
+function normalizeUrl(str) {
+  if (!str) return str;
+  return /^https?:\/\//i.test(str) ? str : 'https://' + str;
+}
+
 // ── File upload zone setup ───────────────────────────
 function setupUploadZone(zoneId, inputId, listId, multiple) {
   const zone  = document.getElementById(zoneId);
