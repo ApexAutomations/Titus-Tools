@@ -85,44 +85,76 @@ function getFilesFromList(listId) {
     .filter(Boolean);
 }
 
-// ── Upload a single File to a public host, return { name, url } ──
-// Tries filebin.net first (confirmed CORS support), falls back to file.io.
+// ── Fetch with a timeout ─────────────────────────────
+function fetchWithTimeout(url, opts, ms = 12000) {
+  const ctrl = new AbortController();
+  const id   = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(id));
+}
+
+// ── Upload a single File to a public host ────────────
+// Returns { name, url } on success, or null if every service fails.
+// Tries cheapest (no-preflight) services first, then falls back.
 async function uploadFileForUrl(file) {
-  const errors = [];
 
-  // 1) filebin.net — confirmed Access-Control-Allow-Origin: *
+  // 1. litterbox.catbox.moe — multipart/form-data, no CORS preflight, 72 h
   try {
-    const bin = 'titus-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
-    const safeName = encodeURIComponent(file.name);
-    const res = await fetch(`https://filebin.net/${bin}/${safeName}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/octet-stream' },
-      body: file
-    });
-    if (res.ok) {
-      return { name: file.name, url: `https://filebin.net/${bin}/${safeName}` };
+    const fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('time', '72h');
+    fd.append('fileToUpload', file, file.name);
+    const r = await fetchWithTimeout(
+      'https://litterbox.catbox.moe/resources/internals/api.php',
+      { method: 'POST', body: fd }
+    );
+    if (r.ok) {
+      const url = (await r.text()).trim();
+      if (url.startsWith('http')) return { name: file.name, url };
     }
-    errors.push(`filebin.net HTTP ${res.status}`);
-  } catch (e) { errors.push('filebin.net: ' + e.message); }
+  } catch (_) {}
 
-  // 2) file.io fallback
+  // 2. uguu.se — multipart/form-data, no CORS preflight, 48 h
+  try {
+    const fd = new FormData();
+    fd.append('files[]', file, file.name);
+    const r = await fetchWithTimeout('https://uguu.se/upload', { method: 'POST', body: fd });
+    if (r.ok) {
+      const data = await r.json();
+      const url  = data?.files?.[0]?.url;
+      if (url) return { name: file.name, url };
+    }
+  } catch (_) {}
+
+  // 3. filebin.net — confirmed Access-Control-Allow-Origin: * (triggers preflight)
+  try {
+    const bin  = 'titus-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const safe = encodeURIComponent(file.name);
+    const r = await fetchWithTimeout(`https://filebin.net/${bin}/${safe}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body:    file
+    }, 20000);
+    if (r.ok) return { name: file.name, url: `https://filebin.net/${bin}/${safe}` };
+  } catch (_) {}
+
+  // 4. file.io — multipart/form-data, no CORS preflight, 1 d
   try {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('expires', '1d');
-    fd.append('maxDownloads', '10');
-    const res = await fetch('https://file.io', { method: 'POST', body: fd });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.link) return { name: file.name, url: json.link };
-      errors.push('file.io: ' + (json.message || 'no link'));
-    } else { errors.push(`file.io HTTP ${res.status}`); }
-  } catch (e) { errors.push('file.io: ' + e.message); }
+    const r = await fetchWithTimeout('https://file.io', { method: 'POST', body: fd });
+    if (r.ok) {
+      const j = await r.json();
+      if (j.success && j.link) return { name: file.name, url: j.link };
+    }
+  } catch (_) {}
 
-  throw new Error(`All uploads failed for "${file.name}": ${errors.join('; ')}`);
+  console.warn('[Titus] All URL upload services unreachable for:', file.name);
+  return null; // caller will fall back to direct multipart
 }
 
-// ── Upload all files in a list zone, return array of { name, url } ──
+// ── Upload all files in a list zone ──────────────────
+// Returns array of { name, url } — entries may be null if upload failed.
 async function uploadListFiles(listId) {
   const files = getFilesFromList(listId);
   if (!files.length) return [];

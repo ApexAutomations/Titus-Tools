@@ -512,44 +512,63 @@
       document.getElementById('overlayEmail').textContent = userEmail;
       showOverlay('loadingOverlay');
 
-      // Step 1: Upload files to get public download URLs
-      let logoResults, surveyResults, transcriptResults, docsResults;
+      const WEBHOOK_URL = 'https://hook.us1.make.com/m13s74cmy92mkqtu5eobdjjzpq79iumv';
+      const surveyText  = document.getElementById('surveyText').value.trim();
+
+      // Collect files once (needed for multipart fallback too)
+      const logoFiles       = getFilesFromList('logoFileList');
+      const surveyFiles     = getFilesFromList('surveyFileList');
+      const transcriptFiles = getFilesFromList('transcriptFileList');
+      const docsFiles       = getFilesFromList('docsFileList');
+
       try {
-        [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
+        // Step 1: Try to get public download URLs for every file
+        const [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
           uploadListFiles('logoFileList'),
           uploadListFiles('surveyFileList'),
           uploadListFiles('transcriptFileList'),
           uploadListFiles('docsFileList')
         ]);
-      } catch (uploadErr) {
-        closeOverlay('loadingOverlay');
-        showError('File upload failed: ' + uploadErr.message);
-        console.error('File upload error:', uploadErr);
-        return;
-      }
 
-      // Step 2: Send JSON payload with download URLs to Make.com
-      try {
-        const surveyText = document.getElementById('surveyText').value.trim();
-        const payload = {
-          tool:            'calibration-kickoff',
-          companyName,
-          websiteUrl,
-          userEmail,
-          logo_url:        logoResults[0]?.url        ?? null,
-          survey_url:      surveyResults[0]?.url      ?? null,
-          survey_text:     surveyText                 || null,
-          transcript_url:  transcriptResults[0]?.url  ?? null,
-          docs_urls:       docsResults.map(r => r.url)
-        };
+        // allUrlsOk is true when every file that exists has a URL (nulls = failure)
+        const allUrlsOk = [...logoResults, ...surveyResults, ...transcriptResults, ...docsResults]
+          .every(r => r !== null);
 
-        const WEBHOOK_URL = 'https://hook.us1.make.com/m13s74cmy92mkqtu5eobdjjzpq79iumv';
+        let response;
 
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        if (allUrlsOk) {
+          // ── Mode A: send clean JSON with download URLs ────────────────────
+          const payload = {
+            tool:           'calibration-kickoff',
+            companyName,
+            websiteUrl,
+            userEmail,
+            logo_url:       logoResults[0]?.url       ?? null,
+            survey_url:     surveyResults[0]?.url     ?? null,
+            survey_text:    surveyText                || null,
+            transcript_url: transcriptResults[0]?.url ?? null,
+            docs_urls:      docsResults.map(r => r.url)
+          };
+          response = await fetch(WEBHOOK_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload)
+          });
+        } else {
+          // ── Mode B: file hosts unreachable — send files directly as multipart
+          console.info('[Titus] URL services unavailable; sending files directly to Make.com');
+          const fd = new FormData();
+          fd.append('tool',        'calibration-kickoff');
+          fd.append('companyName', companyName);
+          fd.append('websiteUrl',  websiteUrl);
+          fd.append('userEmail',   userEmail);
+          if (logoFiles[0])       fd.append('logo',       logoFiles[0],       logoFiles[0].name);
+          if (surveyFiles[0])     fd.append('survey',     surveyFiles[0],     surveyFiles[0].name);
+          if (surveyText)         fd.append('surveyText', surveyText);
+          if (transcriptFiles[0]) fd.append('transcript', transcriptFiles[0], transcriptFiles[0].name);
+          docsFiles.forEach((f, i) => fd.append(`docs_${i}`, f, f.name));
+          response = await fetch(WEBHOOK_URL, { method: 'POST', body: fd });
+        }
 
         if (response.ok) {
           localStorage.setItem('titus_user_email', userEmail);
@@ -559,10 +578,10 @@
           const body = await response.text().catch(() => '');
           throw new Error(`Server returned status ${response.status}${body ? ': ' + body.slice(0, 200) : ''}`);
         }
-      } catch (webhookErr) {
+      } catch (err) {
         closeOverlay('loadingOverlay');
-        showError('Submission failed: ' + webhookErr.message);
-        console.error('Webhook error:', webhookErr);
+        showError('Submission failed: ' + err.message);
+        console.error('Submit error:', err);
       }
     });
 
