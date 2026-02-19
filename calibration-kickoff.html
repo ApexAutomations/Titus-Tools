@@ -302,11 +302,11 @@
             <div class="form-block">
               <div class="form-block-title">Company Logo <span class="req">*</span></div>
               <div class="upload-zone" id="logoZone">
-                <input type="file" id="logoFile" name="logoFile" accept="image/*,.svg,.eps,.ai" />
+                <input type="file" id="logoFile" name="logoFile" accept=".png" />
                 <div class="upload-icon">🖼️</div>
                 <div class="upload-label">Upload Company Logo</div>
                 <p>Click to browse or drag and drop</p>
-                <div class="file-types">PNG, JPG, SVG, EPS, AI accepted</div>
+                <div class="file-types">PNG only</div>
               </div>
               <div class="file-list" id="logoFileList"></div>
             </div>
@@ -314,11 +314,11 @@
             <div class="form-block">
               <div class="form-block-title">Kickoff Call Transcript</div>
               <div class="upload-zone" id="transcriptZone">
-                <input type="file" id="transcriptFile" name="transcriptFile" accept=".pdf,.doc,.docx,.txt,.vtt,.srt" />
+                <input type="file" id="transcriptFile" name="transcriptFile" accept=".txt" />
                 <div class="upload-icon">🎙️</div>
                 <div class="upload-label">Upload Call Transcript</div>
                 <p>Click to browse or drag and drop</p>
-                <div class="file-types">PDF, Word, TXT, VTT, SRT accepted</div>
+                <div class="file-types">TXT only</div>
               </div>
               <div class="file-list" id="transcriptFileList"></div>
             </div>
@@ -326,26 +326,11 @@
 
           <hr class="form-divider" />
 
-          <!-- Kickoff Survey (upload or paste) -->
+          <!-- Kickoff Survey (paste only) -->
           <div class="form-block">
             <div class="form-block-title">Kickoff Survey</div>
-            <div class="input-tabs">
-              <button type="button" class="input-tab active" onclick="switchSurveyTab('upload')">Upload File</button>
-              <button type="button" class="input-tab" onclick="switchSurveyTab('paste')">Paste Text</button>
-            </div>
-            <div id="surveyUploadPanel">
-              <div class="upload-zone" id="surveyZone">
-                <input type="file" id="surveyFile" name="surveyFile" accept=".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx" />
-                <div class="upload-icon">📋</div>
-                <div class="upload-label">Upload Kickoff Survey</div>
-                <p>Click to browse or drag and drop</p>
-                <div class="file-types">PDF, Word, Excel, CSV, TXT accepted</div>
-              </div>
-              <div class="file-list" id="surveyFileList"></div>
-            </div>
-            <div id="surveyPastePanel" style="display:none;">
-              <textarea id="surveyText" name="surveyText" class="survey-paste" placeholder="Paste your kickoff survey responses here…"></textarea>
-            </div>
+            <textarea id="surveyText" name="surveyText" class="survey-paste" placeholder="Paste your kickoff survey responses here…"></textarea>
+            <div class="file-list" id="surveyFileList"></div>
           </div>
 
           <hr class="form-divider" />
@@ -354,11 +339,11 @@
           <div class="form-block">
             <div class="form-block-title">Additional Documents</div>
             <div class="upload-zone" id="docsZone">
-              <input type="file" id="docsFiles" name="docsFiles" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx" multiple />
+              <input type="file" id="docsFiles" name="docsFiles" accept=".pdf" />
               <div class="upload-icon">📁</div>
               <div class="upload-label">Upload Job Descriptions &amp; Other PDFs</div>
-              <p>Click to browse or drag and drop &mdash; <strong style="color:var(--white);">multiple files supported</strong></p>
-              <div class="file-types">PDF, Word, Excel, TXT accepted &nbsp;&bull;&nbsp; Select multiple files at once</div>
+              <p>Click to browse or drag and drop</p>
+              <div class="file-types">PDF only</div>
             </div>
             <div class="file-list" id="docsFileList"></div>
           </div>
@@ -427,26 +412,8 @@
     document.getElementById('logoZone').addEventListener('drop', function() {
       document.getElementById('logoZone').classList.remove('required-error');
     });
-    setupUploadZone('surveyZone', 'surveyFile', 'surveyFileList', false);
     setupUploadZone('transcriptZone', 'transcriptFile', 'transcriptFileList', false);
-    setupUploadZone('docsZone', 'docsFiles', 'docsFileList', true);
-
-    // Survey tab toggle
-    function switchSurveyTab(tab) {
-      const uploadPanel = document.getElementById('surveyUploadPanel');
-      const pastePanel  = document.getElementById('surveyPastePanel');
-      const tabs = document.querySelectorAll('.input-tab');
-      tabs.forEach(t => t.classList.remove('active'));
-      if (tab === 'upload') {
-        uploadPanel.style.display = '';
-        pastePanel.style.display  = 'none';
-        tabs[0].classList.add('active');
-      } else {
-        uploadPanel.style.display = 'none';
-        pastePanel.style.display  = '';
-        tabs[1].classList.add('active');
-      }
-    }
+    setupUploadZone('docsZone', 'docsFiles', 'docsFileList', false);
 
     // Step indicator update on scroll/interaction
     document.getElementById('calibrationForm').addEventListener('change', updateSteps);
@@ -569,7 +536,6 @@
       // Restore saved email after reset clears it
       const saved = localStorage.getItem('titus_user_email');
       if (saved) document.getElementById('userEmail').value = saved;
-      switchSurveyTab('upload');
       closeOverlay('successOverlay');
     }
 
