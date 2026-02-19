@@ -85,93 +85,29 @@ function getFilesFromList(listId) {
     .filter(Boolean);
 }
 
-// ── Fetch with a timeout ─────────────────────────────
-function fetchWithTimeout(url, opts, ms = 12000) {
-  const ctrl = new AbortController();
-  const id   = setTimeout(() => ctrl.abort(), ms);
-  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(id));
-}
-
-// ── Upload a single File to a public host ────────────
-// Returns { name, url } on success, or null if every service fails.
-// Tries cheapest (no-preflight) services first, then falls back.
-async function uploadFileForUrl(file) {
-
-  // 1. litterbox.catbox.moe — multipart/form-data, no CORS preflight, 72 h
-  try {
-    const fd = new FormData();
-    fd.append('reqtype', 'fileupload');
-    fd.append('time', '72h');
-    fd.append('fileToUpload', file, file.name);
-    const r = await fetchWithTimeout(
-      'https://litterbox.catbox.moe/resources/internals/api.php',
-      { method: 'POST', body: fd }
-    );
-    if (r.ok) {
-      const url = (await r.text()).trim();
-      if (url.startsWith('http')) return { name: file.name, url };
-    }
-  } catch (_) {}
-
-  // 2. uguu.se — multipart/form-data, no CORS preflight, 48 h
-  try {
-    const fd = new FormData();
-    fd.append('files[]', file, file.name);
-    const r = await fetchWithTimeout('https://uguu.se/upload', { method: 'POST', body: fd });
-    if (r.ok) {
-      const data = await r.json();
-      const url  = data?.files?.[0]?.url;
-      if (url) return { name: file.name, url };
-    }
-  } catch (_) {}
-
-  // 3. filebin.net — confirmed Access-Control-Allow-Origin: * (triggers preflight)
-  try {
-    const bin  = 'titus-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
-    const safe = encodeURIComponent(file.name);
-    const r = await fetchWithTimeout(`https://filebin.net/${bin}/${safe}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/octet-stream' },
-      body:    file
-    }, 20000);
-    if (r.ok) return { name: file.name, url: `https://filebin.net/${bin}/${safe}` };
-  } catch (_) {}
-
-  // 4. file.io — multipart/form-data, no CORS preflight, 1 d
-  try {
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('expires', '1d');
-    const r = await fetchWithTimeout('https://file.io', { method: 'POST', body: fd });
-    if (r.ok) {
-      const j = await r.json();
-      if (j.success && j.link) return { name: file.name, url: j.link };
-    }
-  } catch (_) {}
-
-  console.warn('[Titus] All URL upload services unreachable for:', file.name);
-  return null; // caller will fall back to direct multipart
-}
-
-// ── Upload all files in a list zone ──────────────────
-// Returns array of { name, url } — entries may be null if upload failed.
-async function uploadListFiles(listId) {
-  const files = getFilesFromList(listId);
-  if (!files.length) return [];
-  return Promise.all(files.map(uploadFileForUrl));
+// ── Convert a File to a base64 payload object ────────
+// Returns { filename, extension, mimetype, data } where data is raw base64
+// (no data-URI prefix). Uses FileReader so it works in any browser.
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // result is "data:<mime>;base64,<data>" — keep only the raw base64 part
+      const data = reader.result.split(',')[1];
+      resolve({
+        filename:  file.name,
+        extension: file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '',
+        mimetype:  file.type || 'application/octet-stream',
+        data
+      });
+    };
+    reader.onerror = () => reject(new Error(`Could not read file: ${file.name}`));
+    reader.readAsDataURL(file);
+  });
 }
 
 function formatBytes(bytes) {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
   return (bytes / 1048576).toFixed(1) + ' MB';
-}
-
-// ── Append files to FormData ─────────────────────────
-function appendFiles(formData, inputId, fieldName) {
-  const input = document.getElementById(inputId);
-  if (!input || !input.files) return;
-  Array.from(input.files).forEach((file, i) => {
-    formData.append(fieldName + (input.multiple ? `_${i}` : ''), file);
-  });
 }

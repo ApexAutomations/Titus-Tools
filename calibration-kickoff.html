@@ -515,60 +515,33 @@
       const WEBHOOK_URL = 'https://hook.us1.make.com/m13s74cmy92mkqtu5eobdjjzpq79iumv';
       const surveyText  = document.getElementById('surveyText').value.trim();
 
-      // Collect files once (needed for multipart fallback too)
       const logoFiles       = getFilesFromList('logoFileList');
       const surveyFiles     = getFilesFromList('surveyFileList');
       const transcriptFiles = getFilesFromList('transcriptFileList');
       const docsFiles       = getFilesFromList('docsFileList');
 
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+
       try {
-        // Step 1: Try to get public download URLs for every file
-        const [logoResults, surveyResults, transcriptResults, docsResults] = await Promise.all([
-          uploadListFiles('logoFileList'),
-          uploadListFiles('surveyFileList'),
-          uploadListFiles('transcriptFileList'),
-          uploadListFiles('docsFileList')
-        ]);
+        // Convert every file to base64 simultaneously, then POST a single JSON payload
+        const allFiles    = [...logoFiles, ...surveyFiles, ...transcriptFiles, ...docsFiles];
+        const filePayloads = await Promise.all(allFiles.map(fileToBase64));
 
-        // allUrlsOk is true when every file that exists has a URL (nulls = failure)
-        const allUrlsOk = [...logoResults, ...surveyResults, ...transcriptResults, ...docsResults]
-          .every(r => r !== null);
+        const payload = {
+          tool:        'calibration-kickoff',
+          companyName,
+          websiteUrl,
+          userEmail,
+          survey_text: surveyText || null,
+          files:       filePayloads
+        };
 
-        let response;
-
-        if (allUrlsOk) {
-          // ── Mode A: send clean JSON with download URLs ────────────────────
-          const payload = {
-            tool:           'calibration-kickoff',
-            companyName,
-            websiteUrl,
-            userEmail,
-            logo_url:       logoResults[0]?.url       ?? null,
-            survey_url:     surveyResults[0]?.url     ?? null,
-            survey_text:    surveyText                || null,
-            transcript_url: transcriptResults[0]?.url ?? null,
-            docs_urls:      docsResults.map(r => r.url)
-          };
-          response = await fetch(WEBHOOK_URL, {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(payload)
-          });
-        } else {
-          // ── Mode B: file hosts unreachable — send files directly as multipart
-          console.info('[Titus] URL services unavailable; sending files directly to Make.com');
-          const fd = new FormData();
-          fd.append('tool',        'calibration-kickoff');
-          fd.append('companyName', companyName);
-          fd.append('websiteUrl',  websiteUrl);
-          fd.append('userEmail',   userEmail);
-          if (logoFiles[0])       fd.append('logo',       logoFiles[0],       logoFiles[0].name);
-          if (surveyFiles[0])     fd.append('survey',     surveyFiles[0],     surveyFiles[0].name);
-          if (surveyText)         fd.append('surveyText', surveyText);
-          if (transcriptFiles[0]) fd.append('transcript', transcriptFiles[0], transcriptFiles[0].name);
-          docsFiles.forEach((f, i) => fd.append(`docs_${i}`, f, f.name));
-          response = await fetch(WEBHOOK_URL, { method: 'POST', body: fd });
-        }
+        const response = await fetch(WEBHOOK_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
 
         if (response.ok) {
           localStorage.setItem('titus_user_email', userEmail);
@@ -582,6 +555,8 @@
         closeOverlay('loadingOverlay');
         showError('Submission failed: ' + err.message);
         console.error('Submit error:', err);
+      } finally {
+        submitBtn.disabled = false;
       }
     });
 
