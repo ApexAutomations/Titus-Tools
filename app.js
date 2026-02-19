@@ -127,8 +127,7 @@ async function extractTranscriptText(file) {
     .replace(/Transcribed with[^\n]*/gi, '')      // Transcription footers
     .replace(/\[BLANK_AUDIO\]/gi, '')
     .replace(/\s+/g, ' ')
-    .trim()
-    .substring(0, 8000);
+    .trim();
 }
 
 // ── Extract text from a PDF file using PDF.js ────────
@@ -145,7 +144,7 @@ async function extractPdfText(file) {
     .join('\n')
     .replace(/\s+/g, ' ')
     .trim()
-    .substring(0, 8000);
+    .substring(0, 18000);
 }
 
 function formatBytes(bytes) {
