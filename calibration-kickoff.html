@@ -491,9 +491,12 @@
       submitBtn.disabled = true;
 
       try {
-        // Convert every file to base64 simultaneously, then POST a single JSON payload
-        const allFiles    = [...logoFiles, ...surveyFiles, ...transcriptFiles, ...docsFiles];
-        const filePayloads = await Promise.all(allFiles.map(fileToBase64));
+        // Convert each file to base64 in parallel, keyed by its role
+        const [logo, transcript, document_] = await Promise.all([
+          logoFiles[0]       ? fileToBase64(logoFiles[0])       : Promise.resolve(null),
+          transcriptFiles[0] ? fileToBase64(transcriptFiles[0]) : Promise.resolve(null),
+          docsFiles[0]       ? fileToBase64(docsFiles[0])       : Promise.resolve(null)
+        ]);
 
         const payload = {
           tool:        'calibration-kickoff',
@@ -501,7 +504,9 @@
           websiteUrl,
           userEmail,
           survey_text: surveyText || null,
-          files:       filePayloads
+          logo,
+          transcript,
+          document:    document_
         };
 
         const response = await fetch(WEBHOOK_URL, {
