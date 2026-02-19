@@ -353,10 +353,23 @@
         <!-- Submit Bar -->
         <div class="submit-bar">
           <p>Fields marked <strong style="color:var(--orange);">*</strong> are required. Other files are optional but recommended.</p>
-          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-            <span>Generate Strategy Document</span>
-            <span>&#9654;</span>
-          </button>
+          <div style="position:relative;display:inline-block;">
+            <button type="button" class="btn btn-primary btn-lg" id="submitBtn" disabled
+              style="opacity:0.45;cursor:not-allowed;pointer-events:none;">
+              <span>Generate Strategy Document</span>
+              <span>&#9654;</span>
+            </button>
+            <div id="disabledBtnOverlay" style="position:absolute;inset:0;cursor:not-allowed;"
+              title="This tool is temporarily offline to save on API costs. Please reach out to Koal if you'd like to see a full demo."></div>
+          </div>
+          <p id="offlineNotice" style="display:none;margin-top:0.75rem;color:var(--gold);font-size:0.9rem;text-align:center;">
+            This tool is temporarily offline to save on API costs. Please reach out to Koal if you'd like to see a full demo.
+          </p>
+          <script>
+            document.getElementById('disabledBtnOverlay').addEventListener('click', function() {
+              document.getElementById('offlineNotice').style.display = 'block';
+            });
+          </script>
         </div>
 
       </div>
