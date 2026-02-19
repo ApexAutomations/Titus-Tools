@@ -87,12 +87,11 @@ function getFilesFromList(listId) {
 
 // ── Convert a File to a base64 payload object ────────
 // Returns { filename, extension, mimetype, data } where data is raw base64
-// (no data-URI prefix). Uses FileReader so it works in any browser.
+// (no data-URI prefix). Used for the logo only.
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      // result is "data:<mime>;base64,<data>" — keep only the raw base64 part
       const data = reader.result.split(',')[1];
       resolve({
         filename:  file.name,
@@ -104,6 +103,49 @@ function fileToBase64(file) {
     reader.onerror = () => reject(new Error(`Could not read file: ${file.name}`));
     reader.readAsDataURL(file);
   });
+}
+
+// ── Read a plain-text file as a UTF-8 string ─────────
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error(`Could not read file: ${file.name}`));
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+// ── Extract and clean text from a transcript (.txt) ──
+async function extractTranscriptText(file) {
+  const raw = await readFileAsText(file);
+  return raw
+    .replace(/\d{1,2}:\d{2}:\d{2}[.,]\d*/g, '') // HH:MM:SS.mmm timestamps
+    .replace(/\d{1,2}:\d{2}:\d{2}/g, '')         // HH:MM:SS timestamps
+    .replace(/\d{1,2}:\d{2}/g, '')               // MM:SS timestamps
+    .replace(/\(Speaker \d+\)/gi, '')             // (Speaker N) labels
+    .replace(/Speaker\s*\d+\s*:/gi, '')           // Speaker N: labels
+    .replace(/Transcribed with[^\n]*/gi, '')      // Transcription footers
+    .replace(/\[BLANK_AUDIO\]/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 8000);
+}
+
+// ── Extract text from a PDF file using PDF.js ────────
+async function extractPdfText(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const pageTexts = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page    = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    pageTexts.push(content.items.map(item => item.str).join(' '));
+  }
+  return pageTexts
+    .join('\n')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 8000);
 }
 
 function formatBytes(bytes) {

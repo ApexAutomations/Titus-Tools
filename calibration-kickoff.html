@@ -401,8 +401,11 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="app.js"></script>
   <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     // File upload UI
     setupUploadZone('logoZone', 'logoFile', 'logoFileList', false);
     // Clear logo required-error as soon as a file is added
@@ -491,22 +494,22 @@
       submitBtn.disabled = true;
 
       try {
-        // Convert each file to base64 in parallel, keyed by its role
-        const [logo, transcript, document_] = await Promise.all([
-          logoFiles[0]       ? fileToBase64(logoFiles[0])       : Promise.resolve(null),
-          transcriptFiles[0] ? fileToBase64(transcriptFiles[0]) : Promise.resolve(null),
-          docsFiles[0]       ? fileToBase64(docsFiles[0])       : Promise.resolve(null)
+        // Logo → base64; transcript (.txt) and document (.pdf) → extracted plain text
+        const [logo, transcriptText, documentText] = await Promise.all([
+          logoFiles[0]       ? fileToBase64(logoFiles[0])               : Promise.resolve(null),
+          transcriptFiles[0] ? extractTranscriptText(transcriptFiles[0]) : Promise.resolve(null),
+          docsFiles[0]       ? extractPdfText(docsFiles[0])              : Promise.resolve(null)
         ]);
 
         const payload = {
-          tool:        'calibration-kickoff',
+          tool:            'calibration-kickoff',
           companyName,
           websiteUrl,
           userEmail,
-          survey_text: surveyText || null,
+          survey_text:     surveyText     || null,
           logo,
-          transcript,
-          document:    document_
+          transcript_text: transcriptText || null,
+          document_text:   documentText   || null
         };
 
         const response = await fetch(WEBHOOK_URL, {
